@@ -435,9 +435,22 @@
   <%# li class='span4' %>
   <li class='col-xs-4'>
 <%# Upgrade 2.0.0 fine %>
-    <div class='thumbnail'>	
-		<%= link_to image_tag(thumb_digital['src'], :title => thumb_digital['title']), '#', :class => 'thumbnail', :id => 'popup-gallery' %>
-    <p><%= items.size %> immagini</p>
+
+    <div class='thumbnail'>
+		<% if thumb_digital['src'].to_s.downcase.include?('pdf') %>
+			<% pdf_url = thumb_digital['src'].sub('thumb.pdf', 'original.pdf') %>
+			<%= image_tag('pdf-thumb.png', title: 'PDF document') %>
+			<p>
+         	<%= link_to 'Scarica il PDF', pdf_url, target: '_blank' %>
+        	</p>
+        <% else %>
+                <%= link_to image_tag(thumb_digital['src'], :title => thumb_digital['title']), '#', :class => 'thumbnail', :id => 'popup-gallery' %>
+        		<% if items.size > 1 %>
+					<p><%= items.size %> immagini</p>
+				<% else %>
+					<p><%= items.size %> immagine</p>
+				<% end %>
+		<% end %>
     </div>
   </li>
 </ul>
