@@ -406,51 +406,69 @@
 <%= render 'shared/editors', :collection => @unit.unit_editors %>
 
 <%
-	thumb_digital = nil
+	thumb_digital_img = nil
 	@unit.digital_objects.each do |dob|
-		if dob.published == true
-			thumb_digital = {}
-			thumb_digital['src'] = dob.asset(:thumb)
+		if (dob.published == true) && (dob.is_image?)
+			thumb_digital_img = {}
+			thumb_digital_img['src'] = dob.asset(:thumb)
 			title = dob.title.blank? ? "" : dob.title
-			thumb_digital['title'] = title
+			thumb_digital_img['title'] = title
 			break
 		end
 	end
 	
-	items = [];
+	image_items = [];
 	  @unit.digital_objects.each do |dob|
-		if dob.published == true
+		if (dob.published == true) && (dob.is_image?)
 			object = {}
 			object['src'] = dob.asset(:large)
 			title = dob.title.blank? ? "" : dob.title
 			object['title'] = title
-			items << object
+			image_items << object
 		end
-	  end
+	end
+
+	pdf_items = [];
+	  @unit.digital_objects.each do |dob|
+		if (dob.published == true) && (dob.is_pdf?)
+			object = {}
+			object['src'] = dob.asset(:original)
+			title = dob.title.blank? ? "" : dob.title
+			object['title'] = title
+			pdf_items << object
+		end
+	end
 %>
 
-<% if (@unit.first_digital_object.present?) && (!thumb_digital.nil?) %>
+<% if (@unit.first_digital_object.present?) && (!thumb_digital_img.nil?) %>
 <ul class='thumbnails'>
 <%# Upgrade 2.0.0 inizio %>
   <%# li class='span4' %>
   <li class='col-xs-4'>
 <%# Upgrade 2.0.0 fine %>
-
     <div class='thumbnail'>
-		<% if thumb_digital['src'].to_s.downcase.include?('pdf') %>
-			<% pdf_url = thumb_digital['src'].sub('thumb.pdf', 'original.pdf') %>
-			<%= image_tag('pdf-thumb.png', title: 'PDF document') %>
-			<p>
-         	<%= link_to 'Scarica il PDF', pdf_url, target: '_blank' %>
-        	</p>
-        <% else %>
-                <%= link_to image_tag(thumb_digital['src'], :title => thumb_digital['title']), '#', :class => 'thumbnail', :id => 'popup-gallery' %>
-        		<% if items.size > 1 %>
-					<p><%= items.size %> immagini</p>
-				<% else %>
-					<p><%= items.size %> immagine</p>
-				<% end %>
-		<% end %>
+    	<%= link_to image_tag(thumb_digital_img['src'], :title => thumb_digital_img['title']), '#', :class => 'thumbnail', :id => 'popup-gallery' %>
+    	<% if image_items.size > 1 %>
+    		<p><%= image_items.size %> immagini</p>
+    	<% else %>
+    	<p><%= image_items.size %> immagine</p>
+    	<% end %>
+    </div>
+  </li>
+</ul>
+<% end %>
+
+<% if !pdf_items.nil? %>
+<ul class='thumbnails'>
+  <li class='col-xs-4'>
+    <div class='thumbnail'>
+    	<% pdf_items.each do |pdfi| %>
+    		<% pdf_url = pdfi['src'] %>
+    		<%= image_tag('pdf-thumb.png', title: 'PDF document') %>
+    		<p>
+					<%= link_to 'Scarica il PDF', pdf_url, target: '_blank' %>
+      	</p>
+      <% end %>
     </div>
   </li>
 </ul>

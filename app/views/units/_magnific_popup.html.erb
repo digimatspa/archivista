@@ -1,7 +1,7 @@
 <%
   items = [];
   @unit.digital_objects.each do |dob|
-	if dob.published == true
+	if (dob.published == true) && (dob.is_image?)
 		object = {}
 		object['src'] = dob.asset(:large)
 		title = dob.title.blank? ? "" : dob.title
